@@ -6,35 +6,57 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def generate_answer(query, docs, chat_history):
-    context = "\n\n".join([doc.page_content for doc in docs])
+MODEL_NAME = "gpt-4o-mini"
 
-    history_text = "\n".join(
-        [f"User: {item['user']}\nAssistant: {item['assistant']}" for item in chat_history]
+
+def generate_answer(query, docs, chat_history):
+    # Retrieved context
+    context = "\n\n".join(
+        [f"[Source {i+1}]\n{doc.page_content}" for i, doc in enumerate(docs)]
     )
 
-    prompt = f"""
-    You are a helpful pharma document assistant.
+    # Keep only last 5 chat turns
+    recent_history = chat_history[-5:]
 
-    Use the conversation history and retrieved context to answer the question.
-    If the answer is not in the context, say you don't know.
+    messages = [
+        {
+            "role": "system",
+            "content": """
+You are a helpful pharma document assistant.
 
-    Conversation History:
-    {history_text}
+Rules:
+1. Answer ONLY using the provided document context when possible.
+2. If the answer is not found, say: "I couldn't find that in the uploaded document."
+3. Be clear, concise, and accurate.
+4. For medical topics, remind users to consult a healthcare professional.
+5. Use bullet points when useful.
+6. If summarizing, provide structured output.
+"""
+        }
+    ]
 
-    Document Context:
-    {context}
+    # Add previous conversation
+    for item in recent_history:
+        messages.append({"role": "user", "content": item["user"]})
+        messages.append({"role": "assistant", "content": item["assistant"]})
 
-    Current Question:
-    {query}
+    # Current query
+    messages.append({
+        "role": "user",
+        "content": f"""
+Document Context:
+{context}
 
-    Answer:
-    """
+Question:
+{query}
+"""
+    })
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
+        model=MODEL_NAME,
+        messages=messages,
+        temperature=0.2,
+        max_tokens=700
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content.strip()

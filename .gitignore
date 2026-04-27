@@ -1,8 +1,10 @@
-venv/
-.env
+venv
+venv311/
+data/
 __pycache__/
 *.pyc
-.DS_Store
-data/
+.env
 temp/
 chroma_db/
+.DS_Store
+.streamlit/secrets.toml
