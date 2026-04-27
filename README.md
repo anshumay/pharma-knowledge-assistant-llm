@@ -1,19 +1,29 @@
-# Pharma Knowledge Assistant
+# Pharma Knowledge Assistant 💊
 
-LLM-powered assistant for querying pharma documents using Retrieval-Augmented Generation (RAG).
+AI-powered document Q&A assistant for pharmaceutical PDFs.
 
 ## Features
-- Upload pharma PDFs
-- Ask questions in natural language
-- Retrieve relevant document chunks
-- Generate contextual answers
+- Upload PDF documents
+- Semantic search over document chunks
+- Ask natural language questions
+- Chat history memory
+- Source references with page numbers
+- Built with Streamlit + LangChain + OpenAI + Chroma
 
 ## Tech Stack
 - Python
 - Streamlit
 - LangChain
+- OpenAI
 - ChromaDB
-- OpenAI / Local LLM
+- Sentence Transformers
 
-## Project Status
-In Progress 🚀
+## Run Locally
+pip install -r requirements.txt
+streamlit run app.py
+
+## Use Cases
+- Drug labels
+- Clinical trial PDFs
+- Medical guidelines
+- Research papers
